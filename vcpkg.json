@@ -1,0 +1,26 @@
+{
+  "name": "orbslam2",
+  "dependencies": [
+    {
+      "name": "boost-serialization"
+    },
+    {
+      "name": "eigen3"
+    },
+    {
+      "name": "g2o"
+    },
+    {
+      "name": "opencv"
+    },
+    {
+      "name": "openssl"
+    },
+    {
+      "name": "pangolin"
+    },
+    {
+      "name": "sophus"
+    }
+  ]
+}

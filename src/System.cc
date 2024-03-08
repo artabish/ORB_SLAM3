@@ -115,13 +115,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
         mpVocabulary = new ORBVocabulary();
-        bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
-        if(!bVocLoad)
-        {
-            cerr << "Wrong path to vocabulary. " << endl;
-            cerr << "Falied to open at: " << strVocFile << endl;
-            exit(-1);
-        }
+        mpVocabulary->load(strVocFile);
         cout << "Vocabulary loaded!" << endl << endl;
 
         //Create KeyFrame Database
@@ -137,13 +131,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
         mpVocabulary = new ORBVocabulary();
-        bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
-        if(!bVocLoad)
-        {
-            cerr << "Wrong path to vocabulary. " << endl;
-            cerr << "Falied to open at: " << strVocFile << endl;
-            exit(-1);
-        }
+        mpVocabulary->load(strVocFile);
         cout << "Vocabulary loaded!" << endl << endl;
 
         //Create KeyFrame Database
@@ -278,7 +266,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
-                usleep(1000);
+                std::this_thread::sleep_for(std::chrono::microseconds(1000));
             }
 
             mpTracker->InformOnlyTracking(true);
@@ -353,7 +341,7 @@ Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
-                usleep(1000);
+                std::this_thread::sleep_for(std::chrono::microseconds(1000));
             }
 
             mpTracker->InformOnlyTracking(true);
@@ -428,7 +416,7 @@ Sophus::SE3f System::TrackMonocular(const cv::Mat &im, const double &timestamp, 
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
-                usleep(1000);
+                std::this_thread::sleep_for(std::chrono::microseconds(1000));
             }
 
             mpTracker->InformOnlyTracking(true);
@@ -527,7 +515,7 @@ void System::Shutdown()
     {
         mpViewer->RequestFinish();
         while(!mpViewer->isFinished())
-            usleep(5000);
+            std::this_thread::sleep_for(std::chrono::microseconds(5000));
     }*/
 
     // Wait until all thread have effectively stopped
@@ -542,7 +530,7 @@ void System::Shutdown()
             cout << "break anyway..." << endl;
             break;
         }*/
-        /*usleep(5000);
+        /*std::this_thread::sleep_for(std::chrono::microseconds(5000));
     }*/
 
     if(!mStrSaveAtlasToFile.empty())
@@ -1425,7 +1413,8 @@ void System::SaveAtlas(int type){
 
             oa << strVocabularyName;
             oa << strVocabularyChecksum;
-            oa << mpAtlas;
+          // todo boost serialization relies on DBow2 fork
+          //  oa << mpAtlas;
             cout << "End to write the save text file" << endl;
         }
         else if(type == BINARY_FILE) // File binary
@@ -1436,7 +1425,8 @@ void System::SaveAtlas(int type){
             boost::archive::binary_oarchive oa(ofs);
             oa << strVocabularyName;
             oa << strVocabularyChecksum;
-            oa << mpAtlas;
+          // todo boost serialization relies on DBow2 fork
+          //  oa << mpAtlas;
             cout << "End to write save binary file" << endl;
         }
     }
@@ -1463,7 +1453,8 @@ bool System::LoadAtlas(int type)
         boost::archive::text_iarchive ia(ifs);
         ia >> strFileVoc;
         ia >> strVocChecksum;
-        ia >> mpAtlas;
+      // todo boost serialization relies on DBow2 fork
+        //ia >> mpAtlas;
         cout << "End to load the save text file " << endl;
         isRead = true;
     }
@@ -1479,7 +1470,8 @@ bool System::LoadAtlas(int type)
         boost::archive::binary_iarchive ia(ifs);
         ia >> strFileVoc;
         ia >> strVocChecksum;
-        ia >> mpAtlas;
+      // todo boost serialization relies on DBow2 fork
+       // ia >> mpAtlas;
         cout << "End to load the save binary file" << endl;
         isRead = true;
     }

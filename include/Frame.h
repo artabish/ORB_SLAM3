@@ -22,10 +22,10 @@
 
 #include<vector>
 
-#include "Thirdparty/DBoW2/DBoW2/BowVector.h"
-#include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
+#include "DBoW2/DBoW2/BowVector.h"
+#include "DBoW2/DBoW2/FeatureVector.h"
 
-#include "Thirdparty/Sophus/sophus/geometry.hpp"
+#include "sophus/geometry.hpp"
 
 #include "ImuTypes.h"
 #include "ORBVocabulary.h"
@@ -38,6 +38,8 @@
 
 #include "Eigen/Core"
 #include "sophus/se3.hpp"
+
+using namespace std;
 
 namespace ORB_SLAM3
 {

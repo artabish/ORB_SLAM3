@@ -49,6 +49,7 @@
 #include "MLPnPsolver.h"
 
 #include <Eigen/Sparse>
+#include "DBoW2/DUtils//Random.h"
 
 
 namespace ORB_SLAM3 {
