@@ -115,7 +115,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
 
         mpVocabulary = new ORBVocabulary();
-        mpVocabulary->load(strVocFile);
+        mpVocabulary->loadFromTextFile(strVocFile);
         cout << "Vocabulary loaded!" << endl << endl;
 
         //Create KeyFrame Database
@@ -1413,8 +1413,7 @@ void System::SaveAtlas(int type){
 
             oa << strVocabularyName;
             oa << strVocabularyChecksum;
-          // todo boost serialization relies on DBow2 fork
-          //  oa << mpAtlas;
+            oa << mpAtlas;
             cout << "End to write the save text file" << endl;
         }
         else if(type == BINARY_FILE) // File binary
@@ -1425,8 +1424,7 @@ void System::SaveAtlas(int type){
             boost::archive::binary_oarchive oa(ofs);
             oa << strVocabularyName;
             oa << strVocabularyChecksum;
-          // todo boost serialization relies on DBow2 fork
-          //  oa << mpAtlas;
+            oa << mpAtlas;
             cout << "End to write save binary file" << endl;
         }
     }
@@ -1453,8 +1451,7 @@ bool System::LoadAtlas(int type)
         boost::archive::text_iarchive ia(ifs);
         ia >> strFileVoc;
         ia >> strVocChecksum;
-      // todo boost serialization relies on DBow2 fork
-        //ia >> mpAtlas;
+        ia >> mpAtlas;
         cout << "End to load the save text file " << endl;
         isRead = true;
     }
@@ -1470,8 +1467,7 @@ bool System::LoadAtlas(int type)
         boost::archive::binary_iarchive ia(ifs);
         ia >> strFileVoc;
         ia >> strVocChecksum;
-      // todo boost serialization relies on DBow2 fork
-       // ia >> mpAtlas;
+        ia >> mpAtlas;
         cout << "End to load the save binary file" << endl;
         isRead = true;
     }
