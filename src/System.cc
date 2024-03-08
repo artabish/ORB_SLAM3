@@ -1371,6 +1371,50 @@ float System::GetImageScale()
     return mpTracker->GetImageScale();
 }
 
+void System::SaveMapPointsToPCD(const string& filename)
+{
+  cout << "Saving map points to " << filename << endl;
+    vector<MapPoint*> vMPs;
+    auto vpMaps = mpAtlas->GetAllMaps();
+    for(Map* pMap : vpMaps)
+    {
+        if(pMap)
+        {
+          auto mapPoints = pMap->GetAllMapPoints();
+          vMPs.insert(vMPs.end(), mapPoints.begin(), mapPoints.end());
+        }
+    }
+
+    ofstream f;
+    f.open(filename.c_str());
+
+    // PCD file header
+    f << "# .PCD v.7 - Point Cloud Data file format\n";
+    f << "VERSION .7\n";
+    f << "FIELDS x y z\n";
+    f << "SIZE 4 4 4\n";
+    f << "TYPE F F F\n";
+    f << "COUNT 1 1 1\n";
+    f << "WIDTH " << vMPs.size() << "\n";
+    f << "HEIGHT 1\n";
+    f << "VIEWPOINT 0 0 0 1 0 0 0\n";
+    f << "POINTS " << vMPs.size() << "\n";
+    f << "DATA ascii\n";
+
+    // Write the point cloud data
+    for (size_t i = 0; i < vMPs.size(); i++) {
+        MapPoint* pMP = vMPs[i];
+        if (pMP->isBad()) continue;
+        Eigen::Vector3f pos = pMP->GetWorldPos();
+        f << setprecision(7) << pos[0] << " "
+          << pos[1] << " "
+                          << pos[2] << "\n";
+    }
+
+    f.close();
+    cout << "Map points saved to " << filename << endl;
+}
+
 #ifdef REGISTER_TIMES
 void System::InsertRectTime(double& time)
 {

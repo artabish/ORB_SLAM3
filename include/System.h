@@ -185,6 +185,8 @@ public:
 
     float GetImageScale();
 
+    void SaveMapPointsToPCD(const string &filename);
+
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
     void InsertResizeTime(double& time);
