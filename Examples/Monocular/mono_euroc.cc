@@ -20,6 +20,7 @@
 #include<algorithm>
 #include<fstream>
 #include<chrono>
+#include <filesystem>
 
 #include<opencv2/core/core.hpp>
 
@@ -85,7 +86,7 @@ int main(int argc, char **argv)
 
     double t_resize = 0.f;
     double t_track = 0.f;
-
+    std::map<double, std::string> timestampToFilename;
     for (seq = 0; seq<num_seq; seq++)
     {
 
@@ -105,6 +106,9 @@ int main(int argc, char **argv)
                      <<  vstrImageFilenames[seq][ni] << endl;
                 return 1;
             }
+            std::filesystem::path path(vstrImageFilenames[seq][ni]);
+            std::string filename = path.filename().string();
+            timestampToFilename.insert(std::pair<double, std::string>(tframe, filename));
 
             if(imageScale != 1.f)
             {
@@ -199,6 +203,7 @@ int main(int argc, char **argv)
         SLAM.SaveTrajectoryEuRoC("CameraTrajectory.txt");
         SLAM.SaveKeyFrameTrajectoryEuRoC("KeyFrameTrajectory.txt");
         SLAM.SaveMapPointsToPCD("PointCloud.pcd");
+        SLAM.SaveKeyFrameTrajectoryColmap("KeyFrameTrajectoryColmap.txt", timestampToFilename);
     }
 
     return 0;

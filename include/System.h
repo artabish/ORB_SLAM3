@@ -187,6 +187,8 @@ public:
 
     void SaveMapPointsToPCD(const string &filename);
 
+    void SaveKeyFrameTrajectoryColmap(const string &filename, const std::map<double, std::string>& timestampToFilename);
+
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
     void InsertResizeTime(double& time);

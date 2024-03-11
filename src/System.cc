@@ -1415,6 +1415,74 @@ void System::SaveMapPointsToPCD(const string& filename)
     cout << "Map points saved to " << filename << endl;
 }
 
+void System::SaveKeyFrameTrajectoryColmap(const string& filename, const std::map<double, std::string>& timestampToFilename)
+{
+  cout << endl << "Saving keyframe trajectory to " << filename << " ..." << endl;
+
+    vector<Map*> vpMaps = mpAtlas->GetAllMaps();
+    Map* pBiggerMap;
+    int numMaxKFs = 0;
+    for(Map* pMap :vpMaps)
+    {
+        if(pMap && pMap->GetAllKeyFrames().size() > numMaxKFs)
+        {
+            numMaxKFs = pMap->GetAllKeyFrames().size();
+            pBiggerMap = pMap;
+        }
+    }
+
+    if(!pBiggerMap)
+    {
+        std::cout << "There is not a map!!" << std::endl;
+        return;
+    }
+
+    vector<KeyFrame*> vpKFs = pBiggerMap->GetAllKeyFrames();
+    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+
+    // Transform all keyframes so that the first keyframe is at the origin.
+    // After a loop closure the first keyframe might not be at the origin.
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+
+    for(size_t i=0; i<vpKFs.size(); i++)
+    {
+        KeyFrame* pKF = vpKFs[i];
+
+       // pKF->SetPose(pKF->GetPose()*Two);
+
+        if(!pKF || pKF->isBad())
+            continue;
+
+        if(!timestampToFilename.contains(pKF->mTimeStamp))
+        {
+            continue;
+        }
+        
+        const std::string& filename = timestampToFilename.at(pKF->mTimeStamp);
+
+        if (mSensor == IMU_MONOCULAR || mSensor == IMU_STEREO || mSensor==IMU_RGBD)
+        {
+            Sophus::SE3f Twb = pKF->GetImuPose();
+            Eigen::Quaternionf q = Twb.unit_quaternion();
+            Eigen::Vector3f twb = Twb.translation();
+            f << filename << endl;
+            f << setprecision(9) << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << " " << twb(0) << " " << twb(1) << " " << twb(2)  << endl;
+
+        }
+        else
+        {
+            Sophus::SE3f Twc = pKF->GetPoseInverse();
+            Eigen::Quaternionf q = Twc.unit_quaternion();
+            Eigen::Vector3f t = Twc.translation();
+            f << filename << endl;
+            f << setprecision(9) << q.w() << " " << q.x() << " " << q.y() << " " << q.z() << " " << t(0) << " " << t(1) << " " << t(2)  << endl;
+        }
+    }
+    f.close();
+}
+
 #ifdef REGISTER_TIMES
 void System::InsertRectTime(double& time)
 {
