@@ -97,6 +97,7 @@ double Timestamp::getFloatTime() const {
 string Timestamp::getStringTime() const {
 	char buf[32];
 	sprintf(buf, "%.6lf", this->getFloatTime());
+	sprintf(buf, "%.6lf", this->getFloatTime());
 	return string(buf);
 }
 
